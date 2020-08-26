@@ -1,0 +1,28 @@
+version: "2"
+
+services:
+
+  chirpchirp_api:
+    build: ./api
+    container_name: chirpchirp_api
+    restart: always
+    image: chirpchirp_api
+    command: "uwsgi --ini app.ini"
+    volumes:
+      - ./api:/usr/src/app
+    environment:
+      - FLAST_DEBUG=1
+      - APP_SETTINGS=Development
+    mem_limit: 1g
+
+  proxy:
+    build: ./proxy
+    container_name: proxy
+    restart: always
+    image: nginx
+    volumes:
+      - ./proxy/conf.d:/etc/nginx/conf.d
+    ports:
+      - "80:80"
+    depends_on:
+      - chirpchirp_api
